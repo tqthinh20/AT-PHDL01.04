@@ -19,7 +19,7 @@ namespace _20127253_20127337
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (DynamicPassword.checkDynamicPassword(DynamicPassword.passwordToCode(textBox2.Text)) == true)
+            if (DynamicPassword.checkDynamicPassword(DynamicPassword.passwordProccesing(textBox2.Text)) == true)
             {
                 MessageBox.Show("Correct password!");
                 Globals.correct = 1;

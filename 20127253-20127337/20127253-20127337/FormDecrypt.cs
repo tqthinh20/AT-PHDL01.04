@@ -28,38 +28,33 @@ namespace _20127253_20127337
 
         private void button4_Click(object sender, EventArgs e)
         {
-            FormVerification f = new FormVerification();
-            f.ShowDialog();
-
-            if (Globals.correct == 1)
+            if (File.Exists(textBox1.Text) && textBox2.Text.Length > 0 && textBox3.Text.Length > 0)
             {
-                try
+                FormVerification f = new FormVerification();
+                f.ShowDialog();
+
+                if (Globals.correct == 1)
                 {
-                    if (File.Exists(textBox1.Text))
+                    string dir = Path.GetDirectoryName(textBox1.Text);
+                    string outputFile = dir + "\\" + textBox2.Text;
+
+                    byte[] Hkey = HASH.HashSHA256(Encoding.UTF8.GetBytes(textBox3.Text));  //Generate AES key
+                    AES.FileDecrypt(textBox1.Text, outputFile, Hkey); //Decrypt chosen file with Hkey
+
+                    if (Globals.decSuccess == 1)
                     {
-                        string dir = Path.GetDirectoryName(textBox1.Text);
-                        string outputFile = dir + "\\" + textBox2.Text;
-
-                        byte[] Key = HASH.HashSHA256(Encoding.UTF8.GetBytes(textBox3.Text));  //Generate AES key
-                        AES.FileDecrypt(textBox1.Text, outputFile, Key); //Decrypt chosen file with Key
-
-                        MessageBox.Show("Decrypt successfully!");
+                        MessageBox.Show("Decryption completed!");
 
                         this.Hide();
                         FormMenu form = new FormMenu();
                         form.ShowDialog();
                         this.Close();
-                    }
-
-                    else
-                    {
-                        MessageBox.Show("Invalid input!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                    }                        
+                }                
+            }
+            else
+            {
+                MessageBox.Show("Invalid input!");
             }
         }
 
@@ -69,6 +64,20 @@ namespace _20127253_20127337
             FormMenu form = new FormMenu();
             form.ShowDialog();
             this.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (button1.Text == "Show")
+            {
+                button1.Text = "Hide";
+                textBox3.UseSystemPasswordChar = false;
+            }
+            else if (button1.Text == "Hide")
+            {
+                button1.Text = "Show";
+                textBox3.UseSystemPasswordChar = true;
+            }
         }
     }
 }

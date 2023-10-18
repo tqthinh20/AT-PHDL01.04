@@ -41,10 +41,12 @@ public class AES
             }
 
             fsIn.Close();
+            Globals.encSuccess = 1;
         }
         catch (Exception ex)
         {
             MessageBox.Show("Error: " + ex.Message);
+            Globals.encSuccess = 0;
         }
         finally
         {
@@ -81,14 +83,17 @@ public class AES
                 Application.DoEvents();
                 fsOut.Write(buffer, 0, read);
             }
+            Globals.decSuccess = 1;
         }
         catch (CryptographicException ex_CryptographicException)
         {
             MessageBox.Show("CryptographicException error: " + ex_CryptographicException.Message);
+            Globals.decSuccess = 0;
         }
         catch (Exception ex)
         {
             MessageBox.Show("Error: " + ex.Message);
+            Globals.decSuccess = 0;
         }
 
         try
@@ -98,6 +103,7 @@ public class AES
         catch (Exception ex)
         {
             MessageBox.Show("Error by closing CryptoStream: " + ex.Message);
+            Globals.decSuccess = 0;
         }
         finally
         {
@@ -114,28 +120,23 @@ public class HASH
         using (HashAlgorithm algorithm = SHA256.Create())
             return algorithm.ComputeHash(data);
     }
-
-    public static string hashString(byte[] hash)
-    {
-        return Convert.ToBase64String(hash);
-    }
 }
 
 public class DynamicPassword
 {
-    public static string passwordToCode(string password)
+    public static string passwordProccesing(string password)
     {
         int length = password.Length;
         int first = Math.Abs((int)(password[length - 1] - password[length - 2]));
         int second = Math.Abs((int)(password[first] - password[first + 1]));
-        int last = Math.Abs((int)(password[second] - password[second + 1]));
+        int last = Math.Abs((int)(password[second + 1 + Math.Abs(first - second)] - password[second + 1 + Math.Abs(first - second) + 1]));
 
         return first.ToString() + second.ToString() + last.ToString();
     }
 
-    public static bool checkDynamicPassword(string code)
+    public static bool checkDynamicPassword(string password)
     {
-        if (code == "357")
+        if (password == "357")
             return true;
         else
             return false;
@@ -145,6 +146,8 @@ public class DynamicPassword
 static class Globals
 {
     public static int correct = 0;
+    public static int encSuccess = 1;
+    public static int decSuccess = 1;
 }
 
 namespace _20127253_20127337
